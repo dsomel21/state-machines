@@ -9,9 +9,9 @@ function output(object) {
 console.log('Welcome to the XState workshop!');
 
 const user = {
-  name: 'David Khourshid',
-  company: 'Microsoft',
-  interests: ['piano', 'state machines'],
+  name: 'Dilraj',
+  company: 'Grobo Inc.',
+  interests: ['mustangs', 'lemonade', 'horses'],
 };
 
 output(user);
