@@ -1,17 +1,40 @@
-import { createMachine } from 'xstate';
+import { createMachine, interpret } from 'xstate';
 
-const elOutput = document.querySelector('#output');
+const feedbackMachine = createMachine({
+  initial: 'question',
+  states: {
+    question: {
+      on: {
+        CLICK_GOOD: {
+          target: 'thanks',
+        },
+      },
+    },
+    form: {},
+    thanks: {},
+    closed: {},
+  },
+});
 
-function output(object) {
-  elOutput.innerHTML = JSON.stringify(object, null, 2);
-}
+// const clickGoodEvent = {
+//   type: 'CLICK_GOOD',
+//   date: Date.now(),
+// };
 
-console.log('Welcome to the XState workshop!');
+// const nextState = feedbackMachine.transition(
+//   feedbackMachine.initialState,
+//   'CLICK_GOOD'
+// );
+// console.log(feedbackMachine.initialState);
+// console.log(nextState);
 
-const user = {
-  name: 'Dilraj',
-  company: 'Grobo Inc.',
-  interests: ['mustangs', 'lemonade', 'horses'],
-};
+const feedbackService = interpret(feedbackMachine);
+feedbackService.onTransition((state) => {
+  console.log(state.value);
+});
 
-output(user);
+feedbackService.start();
+// window.send =
+feedbackService.send({
+  type: 'CLICK_GOOD',
+});
