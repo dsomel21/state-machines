@@ -30,6 +30,14 @@ const assignDelta = assign({
   },
 });
 
+const updateDragCount = assign({
+  drags: (context, event) => context.drags + 1,
+});
+
+const notMaxDrags = (context, event) => {
+  return context.drags < 5;
+};
+
 const resetPosition = assign({
   dx: 0,
   dy: 0,
@@ -37,49 +45,63 @@ const resetPosition = assign({
   py: 0,
 });
 
-const machine = createMachine({
-  initial: 'idle',
-  context: {
-    x: 0,
-    y: 0,
-    dx: 0,
-    dy: 0,
-    px: 0,
-    py: 0,
-    drags: 0,
-  },
-  states: {
-    idle: {
-      on: {
-        mousedown: {
-          // Don't select this transition unless
-          // there are < 5 drags
-          // ...
-          actions: assignPoint,
-          target: 'dragging',
+const machine = createMachine(
+  {
+    initial: 'idle',
+    context: {
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      px: 0,
+      py: 0,
+      drags: 0,
+    },
+    states: {
+      idle: {
+        on: {
+          mousedown: [
+            {
+              actions: assignPoint,
+              cond: 'notMaxDrags',
+              target: 'dragging',
+            },
+            {
+              target: 'draggedOut',
+            },
+          ],
+        },
+      },
+      draggedOut: {
+        type: 'final',
+      },
+      dragging: {
+        // Whenever we enter this state, we want to
+        // increment the drags count.
+        // ...
+        entry: [updateDragCount],
+        on: {
+          mousemove: {
+            actions: [assignDelta],
+          },
+          mouseup: {
+            actions: [assignPosition],
+            target: 'idle',
+          },
+          'keyup.escape': {
+            target: 'idle',
+            actions: resetPosition,
+          },
         },
       },
     },
-    dragging: {
-      // Whenever we enter this state, we want to
-      // increment the drags count.
-      // ...
-      on: {
-        mousemove: {
-          actions: assignDelta,
-        },
-        mouseup: {
-          actions: [assignPosition],
-          target: 'idle',
-        },
-        'keyup.escape': {
-          target: 'idle',
-          actions: resetPosition,
-        },
-      },
-    },
   },
-});
+  {
+    guards: {
+      notMaxDrags,
+    },
+  }
+);
 
 const service = interpret(machine);
 

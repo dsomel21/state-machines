@@ -38,13 +38,19 @@ service.start();
 // ...
 
 elBox.addEventListener('mousedown', (event) => {
-  service.send('MOUSE_DOWN');
+  // service.send('MOUSE_DOWN');
+  service.send({
+    type: 'MOUSE_DOWN',
+  });
   // Send a mousedown event
   // ...
 });
 
 elBox.addEventListener('mouseup', (event) => {
-  service.send('MOUSE_UP');
+  // service.send('MOUSE_UP');
+  service.send({
+    type: 'MOUSE_UP',
+  });
   // Send a mouseup event
   // ...
 });
